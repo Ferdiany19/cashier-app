@@ -1,3 +1,5 @@
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -12,6 +14,8 @@ import services.MenuService;
 import services.MenuServiceImp;
 import services.order.OrderService;
 import services.order.OrderServiceImp;
+import services.payment.PaymentService;
+import services.payment.PaymentServiceImp;
 
 public class App {
     static MenuDao menuDao = new MenuDao();
@@ -20,11 +24,13 @@ public class App {
     static OrderDao orderDao = new OrderDao();
     static OrderService orderService = new OrderServiceImp(orderDao);
 
+    static PaymentService paymentService = new PaymentServiceImp();
+
     static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) throws Exception {
 
-        List<Order> orders = new ArrayList<>();
+        // List<Order> orders = new ArrayList<>();
 
         boolean lanjutOrder = true;
         try {
@@ -45,6 +51,8 @@ public class App {
                     case 2:
                         inputPesan();
                         break;
+                    case 3:
+                        pembayaran();
                     default:
                         break;
                 }
@@ -61,6 +69,43 @@ public class App {
         } finally {
             scanner.close();
         }
+    }
+
+    private static void pembayaran() {
+        Double uangCustomer;
+
+        cetakPesanan();
+
+        if (orderService.getOrderNumber() > 0) {
+            do {
+                System.out.print("Masukan Jumlah Uang : Rp ");
+                uangCustomer = scanner.nextDouble();
+                scanner.nextLine();
+
+                if (paymentService.bayar((getPpriceBeforeTax() + ppn()), uangCustomer) != true) {
+                    System.out.println("Uang tidak cukup!");
+                } else {
+                    cetakStruk(uangCustomer);
+                }
+
+            } while (paymentService.bayar((getPpriceBeforeTax() + ppn()), uangCustomer) != true);
+        }
+    }
+
+    private static void cetakStruk(Double uangCustomer) {
+        System.out.println("\n====== BUKTI PEMBAYARAN ======");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, dd MMM uuuu HH:mm:ss");
+        System.out.println("Tanggal : " + LocalDateTime.now().format(formatter));
+
+        cetakPesanan();
+
+        System.out.println("Biaya PPN (11%) : Rp " + ppn());
+        System.out.println("Total harga : Rp " + (getPpriceBeforeTax() + ppn()));
+        System.out.println("Uang Tunai : Rp " + uangCustomer);
+        System.out.println("Kembalian : Rp " + (uangCustomer - (getPpriceBeforeTax() + ppn())));
+        System.out.println("Terima Kasih. Silahkan datang kembali~");
+
+        orderService.deleteAllOrders();
     }
 
     private static void inputPesan() {
@@ -181,8 +226,6 @@ public class App {
         return priceBeforeTax;
     }
 
-    }
-
     private static void tambahPesanan() {
         Integer choice;
 
@@ -241,6 +284,10 @@ public class App {
             System.out.println((i + 1) + ". " + filteredMenu.get(i));
         }
 
+    }
+
+    private static void cetakMenuAwal() {
+        daftarMenu(null);
     }
 
     private static List<Menu> filteredMenu(String kategori) {

@@ -5,7 +5,6 @@ import java.util.List;
 
 import models.Order;
 import services.BaseDao;
-import services.ID;
 
 public class OrderDao implements BaseDao<Order, Integer> {
 
@@ -22,7 +21,7 @@ public class OrderDao implements BaseDao<Order, Integer> {
     }
 
     @Override
-    public Order findById(ID id) {
+    public Order findById(Integer id) {
         return this.orders.get(id - 1);
     }
 
@@ -32,12 +31,12 @@ public class OrderDao implements BaseDao<Order, Integer> {
     }
 
     @Override
-    public void update(ID id, Order data) {
-        return this.orders.set(id - 1, data);
+    public void update(Integer id, Order data) {
+        this.orders.set(id - 1, data);
     }
 
     @Override
-    public void delete(ID id) {
+    public void delete(Integer id) {
         this.orders.remove(id - 1);
     }
 

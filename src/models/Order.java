@@ -6,8 +6,16 @@ public class Order {
     private Double tax;
     private Double priceBeforeTax;
 
+    public Order(Menu menu, Integer quantity) {
+        this.setMenu(menu);
+        this.setQuantity(quantity);
+        this.setPriceBeforeTax(priceBeforeTax);
+        this.setTax(tax);
+    }
+
     public Double getTax() {
         return tax;
+
     }
 
     public void setTax(Double tax) {
@@ -21,11 +29,6 @@ public class Order {
 
     public void setPriceBeforeTax(Double priceBeforeTax) {
         this.priceBeforeTax = this.quantity * this.menu.getPrice();
-    }
-
-    public Order(Menu menu, int quantity) {
-        this.menu = menu;
-        this.quantity = quantity;
     }
 
     public Order() {
@@ -44,7 +47,7 @@ public class Order {
         return quantity;
     }
 
-    public void setQuantity(int quantity) {
+    public void setQuantity(Integer quantity) {
         this.quantity = quantity;
     }
 
